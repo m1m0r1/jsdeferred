@@ -184,9 +184,11 @@ Deferred.prototype = {
 		return this.init();
 	},
 
-	_post : function (okng, fun) {
-		this._next =  new Deferred();
+	_post: function(okng, fun){
+		var next = this._next;
+		this._next = new Deferred();
 		this._next.callback[okng] = fun;
+		this._next._next = next;
 		return this._next;
 	},
 
@@ -203,6 +205,7 @@ Deferred.prototype = {
 			value._next = this._next;
 		} else {
 			if (this._next) this._next._fire(next, value);
+			if (next === "ng") throw value; //The test will pass by comment out this line.
 		}
 		return this;
 	}
